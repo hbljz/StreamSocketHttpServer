@@ -8,6 +8,7 @@ namespace StreamSocketHttpServer
         NoContent = 204,
         MovedPermanently = 301,
         Moved = 301,
+        Redirect = 302,
         NotModified = 304,
         BadRequest = 400,
         Unauthorized = 401,

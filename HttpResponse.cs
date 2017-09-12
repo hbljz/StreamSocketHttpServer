@@ -2,7 +2,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+#if UNITY_WSA && !UNITY_EDITOR
 using System.Threading.Tasks;
+#endif
 
 namespace StreamSocketHttpServer
 {
@@ -71,6 +73,12 @@ namespace StreamSocketHttpServer
             return httpResponse;
         }
 
+        public void Redirect(string target = "/") {
+            StatusCode = HttpStatusCode.Redirect;
+            Headers["Location"] = target;
+        }
+
+#if UNITY_WSA && !UNITY_EDITOR
         /// <summary>
         /// Write this http response to the given stream.
         /// </summary>
@@ -105,5 +113,6 @@ namespace StreamSocketHttpServer
 
             await outputStream.FlushAsync();
         }
+#endif
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
+#if UNITY_WSA && !UNITY_EDITOR
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
-
+#endif
 
 namespace StreamSocketHttpServer
 {
@@ -12,7 +13,9 @@ namespace StreamSocketHttpServer
     /// </summary>
     public abstract class HttpServer : IDisposable
     {
+#if UNITY_WSA && !UNITY_EDITOR
         private StreamSocketListener socketListener;
+#endif
         private readonly int port;
 
         protected HttpServer(int port)
@@ -23,12 +26,18 @@ namespace StreamSocketHttpServer
 
         public bool IgnoreExceptions { get; set; }
 
-        public async void Start()
+        public
+#if UNITY_WSA && !UNITY_EDITOR
+            async 
+#endif
+        void Start()
         {
+#if UNITY_WSA && !UNITY_EDITOR
             socketListener = new StreamSocketListener();
             socketListener.ConnectionReceived += OnConnectionReceived;
 
             await socketListener.BindServiceNameAsync(port.ToString());
+#endif
         }
 
         public void Stop()
@@ -36,6 +45,7 @@ namespace StreamSocketHttpServer
             Dispose();
         }
 
+#if UNITY_WSA && !UNITY_EDITOR
         private void OnConnectionReceived(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
             ProcessRequestAsync(args.Socket);
@@ -81,15 +91,17 @@ namespace StreamSocketHttpServer
         /// <param name="request">the request object for this request</param>
         /// <param name="response">the response object for this request</param>
         public abstract Task HandleRequest(HttpRequest request, HttpResponse response);
-
+#endif
         public void Dispose()
         {
+#if UNITY_WSA && !UNITY_EDITOR
             if (socketListener != null)
             {
                 socketListener.ConnectionReceived -= OnConnectionReceived;
                 socketListener.Dispose();
                 socketListener = null;
             }
-        } 
+#endif
+        }
     }
 }

@@ -3,9 +3,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+#if UNITY_WSA && !UNITY_EDITOR
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
-
+#endif
 
 namespace StreamSocketHttpServer
 {
@@ -34,12 +35,13 @@ namespace StreamSocketHttpServer
         public string Method { get; set; }
         public string Url { get; set; }
         public string Version { get; set; }
-        public MyDictionary<string, string> Args { get; set; } = new MyDictionary<string, string>();
-        public MyDictionary<string, string> Headers { get; set; } = new MyDictionary<string, string>();
+        public MyDictionary<string, string> Args { get; set; } 
+        public MyDictionary<string, string> Headers { get; set; }
         public int BodySize { get; set; }
         public byte[] BodyData { get; set; }
         public bool IsValid { get; set; }
 
+#if UNITY_WSA && !UNITY_EDITOR
         /// <summary>
         /// Reades and creates a http request object from the given stream.
         /// </summary>
@@ -52,6 +54,8 @@ namespace StreamSocketHttpServer
             byte[] myReadBuffer = new byte[BufferSize];
             RequestParserState parserState = RequestParserState.Method;
             HttpRequest httpRequest = new HttpRequest();
+            httpRequest.Args = new MyDictionary<string, string>();
+            httpRequest.Headers = new MyDictionary<string, string>();
 
             String myCompleteMessage = "";
             int numberOfBytesRead = 0;
@@ -227,5 +231,6 @@ namespace StreamSocketHttpServer
 
             return httpRequest;
         }
+#endif
     }
 }
